@@ -6,9 +6,15 @@ export default function CustomCursor() {
   const followerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // Kalau touchscreen, skip cursor sama sekali
+    if (window.matchMedia('(pointer: coarse)').matches) return
+
     const cursor = cursorRef.current
     const follower = followerRef.current
     if (!cursor || !follower) return
+
+    cursor.style.display = 'block'
+    follower.style.display = 'block'
 
     let mouseX = 0, mouseY = 0
     let followerX = 0, followerY = 0
@@ -29,33 +35,13 @@ export default function CustomCursor() {
     window.addEventListener('mousemove', onMove)
     animate()
 
-    // Scale on hover over interactive elements
-    const onEnter = () => {
-      cursor.style.transform += ' scale(2)'
-      follower.style.width = '60px'
-      follower.style.height = '60px'
-      follower.style.opacity = '0.2'
-    }
-    const onLeave = () => {
-      follower.style.width = '36px'
-      follower.style.height = '36px'
-      follower.style.opacity = '0.4'
-    }
-
-    document.querySelectorAll('a, button, [style*="cursor"]').forEach((el) => {
-      el.addEventListener('mouseenter', onEnter)
-      el.addEventListener('mouseleave', onLeave)
-    })
-
-    return () => {
-      window.removeEventListener('mousemove', onMove)
-    }
+    return () => window.removeEventListener('mousemove', onMove)
   }, [])
 
   return (
     <>
-      <div ref={cursorRef} className="cursor" />
-      <div ref={followerRef} className="cursor-follower" />
+      <div ref={cursorRef} className="cursor" style={{ display: 'none' }} />
+      <div ref={followerRef} className="cursor-follower" style={{ display: 'none' }} />
     </>
   )
 }
